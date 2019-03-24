@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "DATABASE_URL=postgres://localhost/my_db nodemon server.js"
+    "start:dev": "PORT=3001 DATABASE_URL=postgres://localhost/my_db nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.16.4",
     "faker": "^4.1.0",
     "i": "^0.3.6",

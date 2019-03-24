@@ -2,6 +2,8 @@ const faker = require('faker');
 const Sequelize = require('sequelize');
 const conn = new Sequelize(process.env.DATABASE_URL);
 const app = require('express')();
+const cors = require('cors');
+app.use(cors());
 
 app.listen(process.env.PORT || 3000);
 
@@ -61,4 +63,6 @@ const sync = ()=> {
     .then( ()=> Promise.all(seed.map( user => User.create(user))));
 };
 
-sync();
+if(process.env.SYNC){
+  sync();
+}

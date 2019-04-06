@@ -61,6 +61,10 @@ const sync  = {
       {
         firstName: 'shep',
         lastName: 'smith'
+      },
+      {
+        firstName: 'prof',
+        lastName: 'katz'
       }
     ];
     console.log('syncing for test');

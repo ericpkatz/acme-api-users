@@ -56,11 +56,12 @@ const sync  = {
       },
       {
         firstName: 'curly',
-        lastName: 'freid'
+        lastName: 'brown'
       },
       {
         firstName: 'shep',
-        lastName: 'smith'
+        lastName: 'smith',
+        middleName: 'brownee'
       },
       {
         firstName: 'prof',
@@ -69,11 +70,11 @@ const sync  = {
     ];
     console.log('syncing for test');
     return _sync()
-      .then( ()=> users.map(({ firstName, lastName}) => {
+      .then( ()=> users.map(({ firstName, lastName, middleName}) => {
         return {
           firstName,
           lastName,
-          middleName: firstName.slice(0, 1),
+          middleName: middleName || firstName.slice(0, 1),
           email: `${firstName}.${lastName}@example.com`
         };
       })) 

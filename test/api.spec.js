@@ -26,4 +26,26 @@ describe('API', ()=> {
         });
     });
   });
+  describe('/api/users/search/:term with no page', ()=> {
+    it('returns the first page of users who match term', ()=> {
+      return app.get('/api/users/search/brown')
+        .expect(200)
+        .then( response => {
+          expect(response.body.count).to.equal(3);
+          expect(response.body.users.length).to.equal(2);
+          expect(response.body.users[0].firstName).to.equal('curly');
+        });
+    });
+  });
+  describe('/api/users/search/:term/:page with page', ()=> {
+    it('returns the correct page of users who match term', ()=> {
+      return app.get('/api/users/search/brown/1')
+        .expect(200)
+        .then( response => {
+          expect(response.body.count).to.equal(3);
+          expect(response.body.users.length).to.equal(1);
+          expect(response.body.users[0].firstName).to.equal('shep');
+        });
+    });
+  });
 });

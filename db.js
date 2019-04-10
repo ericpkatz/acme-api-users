@@ -6,7 +6,8 @@ const User = conn.define('user', {
   firstName: Sequelize.STRING,
   lastName: Sequelize.STRING,
   middleName: Sequelize.STRING,
-  email: Sequelize.STRING
+  email: Sequelize.STRING,
+  title: Sequelize.STRING
 });
 
 const domains = [
@@ -29,7 +30,8 @@ User.generate = (limit)=> {
       firstName: firstName, 
       lastName: lastName,
       middleName: middleName,
-      email: `${firstName}.${middleName}.${lastName}@${faker.random.arrayElement(domains)}.com`
+      email: `${firstName}.${middleName}.${lastName}@${faker.random.arrayElement(domains)}.com`,
+      title: faker.name.jobTitle()
     });
   }
   return users;
@@ -75,7 +77,8 @@ const sync  = {
           firstName,
           lastName,
           middleName: middleName || firstName.slice(0, 1),
-          email: `${firstName}.${lastName}@example.com`
+          email: `${firstName}.${lastName}@example.com`,
+          title: faker.name.jobTitle()
         };
       })) 
       .then( users => Promise.all(users.map( user => User.create(user))))

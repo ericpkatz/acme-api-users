@@ -10,26 +10,31 @@ module.exports = app;
 const PAGE_SIZE = process.env.PAGE_SIZE || 50;
 
 app.get('/api/users/search/:term/:page?', (req, res, next)=> {
-  const term = req.params.term
+  const term = req.params.term;
   const where = {
     [Op.or]: [
       {
         firstName: {
-          [Op.like]: `%${term}%`
+          [Op.iLike]: `%${term}%`
         }
       },
       {
         lastName: {
-          [Op.like]: `%${term}%`
+          [Op.iLike]: `%${term}%`
         }
       },
       {
         middleName: {
-          [Op.like]: `%${term}%`
+          [Op.iLike]: `%${term}%`
         }
       },
       {
         email: {
+          [Op.like]: `%${term}%`
+        }
+      },
+      {
+        title: {
           [Op.like]: `%${term}%`
         }
       }

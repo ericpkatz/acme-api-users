@@ -48,4 +48,15 @@ describe('API', ()=> {
         });
     });
   });
+  describe('/api/users/search/:term/:page with page', ()=> {
+    it('returns the correct page of users who match term', ()=> {
+      return app.get('/api/users/search/Brown/1')
+        .expect(200)
+        .then( response => {
+          expect(response.body.count).to.equal(3);
+          expect(response.body.users.length).to.equal(1);
+          expect(response.body.users[0].firstName).to.equal('shep');
+        });
+    });
+  });
 });

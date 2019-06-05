@@ -1,0 +1,76 @@
+<html>
+  <head>
+    <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' />
+  </head>
+  <body>
+    <div class='container'>
+    <h1>Acme Users API - Endpoints</h1>
+    <ul class='list-group'>
+      <li class='list-group-item list-group-item-primary'>
+        Endpoint /users/:idx? (defaults to 0)
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users'>/api/users</a>
+        First 50 users and total count (users 1 to 50)
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/1'>/api/users/1</a>
+        Second 50 users and total count (users 51 to 100)
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/2'>/api/users/2</a>
+        Third 50 users and total count (users 101 to 150)
+      </li>
+      <li class='list-group-item list-group-item-primary'>
+        Endpoint /users/search/:term/:idx? (defaults to 0)
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/search/Glo'>/api/users/search/Glo</a>
+        First 50 users who have the word Glo in their name, email or job titles and total count of users who match criteria.
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/search/Glo/1'>/api/users/search/Glo/1</a>
+        Second 50 users who have the word Glo in their name, email or job titles and total count of users who match criteria.
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/search/Pro'>/api/users/search/Pro</a>
+        First 50 users who have the word Pro in their name, email or job titles and total count of users who match criteria.
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/search/Pro/1'>/api/users/search/Pro/1</a>
+        Second 50 users who have the word Pro in their name, email or job titles and total count of users who match criteria.
+      </li>
+    </ul>
+    <hr />
+    <h2>Sample Output</h2>
+    <pre style='padding-top: 20px'>
+  {
+    count: 8241,
+    users: [
+      {
+        id: 7908,
+        firstName: "Adah",
+        lastName: "Smith",
+        middleName: "Abigayle",
+        email: "Adah.Abigayle.Smith@google.com",
+        title: "National Metrics Engineer",
+        createdAt: "2019-04-08T20:28:23.093Z",
+        updatedAt: "2019-04-08T20:28:23.093Z"
+      },
+      {
+        id: 4479,
+        firstName: "Adalberto",
+        lastName: "Rolfson",
+        middleName: "Abner",
+        email: "Adalberto.Abner.Rolfson@mac.com",
+        title: "International Implementation Architect",
+        createdAt: "2019-04-08T20:28:23.020Z",
+        updatedAt: "2019-04-08T20:28:23.020Z"
+      }
+      ...
+    ]
+  }
+    </pre>
+    </div>
+  </body>
+</html>

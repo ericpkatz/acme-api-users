@@ -1,6 +1,7 @@
 const { User } = require('./db');
 const app = require('express')();
 const cors = require('cors');
+const path = require('path');
 app.use(cors());
 const Op = require('sequelize').Op;
 
@@ -8,6 +9,8 @@ module.exports = app;
 
 
 const PAGE_SIZE = process.env.PAGE_SIZE || 50;
+
+app.get('/', (req, res, next)=> res.sendFile(path.join(__dirname, 'index.html')));
 
 app.get('/api/users/search/:term/:page?', (req, res, next)=> {
   const term = req.params.term;

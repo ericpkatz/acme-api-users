@@ -1,4 +1,4 @@
-const { User } = require('./db');
+const { User, Company } = require('./db');
 const app = require('express')();
 const cors = require('cors');
 const path = require('path');
@@ -11,6 +11,10 @@ module.exports = app;
 const PAGE_SIZE = process.env.PAGE_SIZE || 50;
 
 app.get('/', (req, res, next)=> res.sendFile(path.join(__dirname, 'index.html')));
+
+app.get('/api/companies', async(req, res, next)=> {
+  res.send(await Company.findAll());
+});
 
 app.get('/api/users/search/:term/:page?', (req, res, next)=> {
   const term = req.params.term;

@@ -23,6 +23,8 @@ const Company = conn.define('company', {
   },
   name: Sequelize.STRING,
   phone: Sequelize.STRING,
+  state: Sequelize.STRING,
+  catchPhrase: Sequelize.STRING
 });
 
 User.belongsTo(Company);
@@ -42,9 +44,13 @@ Company.generate = (limit)=> {
   while(items.length < limit){
     const name = faker.company.companyName();
     const phone = faker.phone.phoneNumber();
+    const state = faker.address.state();
+    const catchPhrase = faker.company.catchPhrase();
     items.push({
       name,
-      phone
+      phone,
+      state,
+      catchPhrase
     });
   }
   return items;

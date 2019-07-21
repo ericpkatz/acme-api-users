@@ -66,6 +66,12 @@ app.get('/api/users/search/:term/:page?', (req, res, next)=> {
   .then( ([count, users]) => res.send({ count, users}))
   .catch(next);
 });
+
+app.get('/api/users/detail/:id', async (req, res, next)=> {
+  return res.send( await User.scope('detail').findByPk(req.params.id));
+
+});
+
 app.get('/api/users/:page?', (req, res, next)=> {
   Promise.all([
     User.count(),

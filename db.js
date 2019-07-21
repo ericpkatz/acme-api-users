@@ -12,7 +12,22 @@ const User = conn.define('user', {
   lastName: Sequelize.STRING,
   middleName: Sequelize.STRING,
   email: Sequelize.STRING,
-  title: Sequelize.STRING
+  title: Sequelize.STRING,
+  bio : Sequelize.TEXT
+}, {
+  defaultScope: {
+    attributes: { exclude: ['bio'] }
+  },
+  scopes: {
+    detail: {
+
+    }
+  },
+  hooks: {
+    beforeSave: (user)=> {
+      user.bio = `${user.firstName } ${ faker.lorem.paragraph(1)} ${ user.lastName } ${ faker.lorem.paragraph(1)} ${user.email} ${ faker.lorem.paragraph(1)}`;
+    }
+  }
 });
 
 const Company = conn.define('company', {

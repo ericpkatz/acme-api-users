@@ -83,9 +83,14 @@ const sync  = {
   },
   BIG: function(){
     console.log('sync big starting');
-    const seed = User.generate(8000 + faker.random.number(300));
+    const seedUsers = User.generate(5000 + faker.random.number(1000));
+    const seedCompanies = Company.generate(40 + faker.random.number(10));
     return _sync({force: true })
-      .then( ()=> Promise.all(seed.map( user => User.create(user))));
+      .then( async()=> {
+        const companies = await Promise.all(seedCompanies.map( company => Company.create(company)))
+        seedUsers.forEach( user => user.companyId = faker.random.arrayElement(companies).id);
+        const users = await Promise.all(seedUsers.map( user => User.create(user)))
+      });
   },
   TEST: function(){
     const users = [

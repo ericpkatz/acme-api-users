@@ -16,6 +16,10 @@ app.get('/api/companies', async(req, res, next)=> {
   res.send(await Company.findAll());
 });
 
+app.get('/api/companies/:id/users', async(req, res, next)=> {
+  res.send(await User.findAll({where: {companyId: req.params.id }}));
+});
+
 app.get('/api/users/search/:term/:page?', (req, res, next)=> {
   const term = req.params.term;
   const where = {

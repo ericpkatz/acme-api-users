@@ -1,6 +1,16 @@
 const Sequelize = require('sequelize');
-const conn = new Sequelize(process.env.DATABASE_URL);
+const conn = new Sequelize(process.env.DATABASE_URL, { logging: false });
 const faker = require('faker');
+
+const Product = conn.define('product', {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true
+  },
+  name: Sequelize.STRING,
+  suggestedPrice: Sequelize.DECIMAL
+});
 
 const User = conn.define('user', {
   id: {
@@ -30,6 +40,11 @@ const User = conn.define('user', {
   }
 });
 
+const CompanyProduct = conn.define('company_product', {
+  price: Sequelize.DECIMAL
+
+});
+
 const Company = conn.define('company', {
   id: {
     type: Sequelize.UUID,
@@ -41,6 +56,9 @@ const Company = conn.define('company', {
   state: Sequelize.STRING,
   catchPhrase: Sequelize.STRING
 });
+
+CompanyProduct.belongsTo(Product);
+CompanyProduct.belongsTo(Company);
 
 User.belongsTo(Company);
 
@@ -90,25 +108,44 @@ User.generate = (limit)=> {
 
 const _sync = ()=> conn.sync({ force: true });
 
+const seedProducts = async (companies)=> {
+  const names = ['foo', 'bar', 'bazz', 'quq', 'fizz', 'buzz' ];
+  const products = await Promise.all(names.map( name => Product.create({ name, suggestedPrice: faker.random.number(20)  + 3 })));
+  const promises = await Promise.all(companies.map( company => {
+    const count = Math.floor(Math.random()*4); 
+    const _products = [];
+    while(_products.length < count){
+      const random = faker.random.arrayElement(products); 
+      if(!_products.includes(random)){
+        _products.push(random);
+      }
+    }
+    return Promise.all(_products.map( p => CompanyProduct.create({ productId: p.id, companyId: company.id, price: p.suggestedPrice - (p.suggestedPrice * (faker.random.number(5)/100))})));
+  }));
+
+};
+
 const sync  = {
   DEV: function(){
     console.log('sync dev starting');
     const seedUsers = User.generate(200 + faker.random.number(30));
-    const seedCompanies = Company.generate(30 + faker.random.number(10));
+    const seedCompanies = Company.generate(8 + faker.random.number(3));
     return _sync({force: true })
       .then( async()=> {
         const companies = await Promise.all(seedCompanies.map( company => Company.create(company)))
+        const products = await seedProducts(companies);
         seedUsers.forEach( user => user.companyId = faker.random.arrayElement(companies).id);
         const users = await Promise.all(seedUsers.map( user => User.create(user)))
       });
   },
   BIG: function(){
     console.log('sync big starting');
-    const seedUsers = User.generate(5000 + faker.random.number(1000));
-    const seedCompanies = Company.generate(40 + faker.random.number(10));
+    const seedUsers = User.generate(1000 + faker.random.number(300));
+    const seedCompanies = Company.generate(30 + faker.random.number(10));
     return _sync({force: true })
       .then( async()=> {
         const companies = await Promise.all(seedCompanies.map( company => Company.create(company)))
+        const products = await seedProducts(companies);
         seedUsers.forEach( user => user.companyId = faker.random.arrayElement(companies).id);
         const users = await Promise.all(seedUsers.map( user => User.create(user)))
       });
@@ -155,5 +192,7 @@ const sync  = {
 module.exports = {
   sync,
   User,
-  Company
+  Company,
+  Product,
+  CompanyProduct
 };

@@ -1,4 +1,4 @@
-const { User, Company } = require('./db');
+const { User, Company, Product, CompanyProduct } = require('./db');
 const app = require('express')();
 const cors = require('cors');
 const path = require('path');
@@ -14,6 +14,14 @@ app.get('/', (req, res, next)=> res.sendFile(path.join(__dirname, 'index.html'))
 
 app.get('/api/companies', async(req, res, next)=> {
   res.send(await Company.findAll());
+});
+
+app.get('/api/products', async(req, res, next)=> {
+  res.send(await Product.findAll());
+});
+
+app.get('/api/company_products', async(req, res, next)=> {
+  res.send(await CompanyProduct.findAll());
 });
 
 app.get('/api/companies/:id/users', async(req, res, next)=> {

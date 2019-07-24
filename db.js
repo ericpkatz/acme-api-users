@@ -19,11 +19,18 @@ const User = conn.define('user', {
     defaultValue: Sequelize.UUIDV4,
     primaryKey: true
   },
+  fullName: {
+    type: Sequelize.VIRTUAL,
+    get: function(){
+      return `${this.firstName} ${ this.lastName } `;
+    }
+  },
   firstName: Sequelize.STRING,
   lastName: Sequelize.STRING,
   middleName: Sequelize.STRING,
   email: Sequelize.STRING,
   title: Sequelize.STRING,
+  avatar: Sequelize.STRING,
   bio : Sequelize.TEXT
 }, {
   defaultScope: {
@@ -36,7 +43,7 @@ const User = conn.define('user', {
   },
   hooks: {
     beforeSave: (user)=> {
-      user.bio = `${user.firstName } ${ faker.lorem.paragraph(1)} ${ user.lastName } ${ faker.lorem.paragraph(1)} ${user.email} ${ faker.lorem.paragraph(1)}`;
+      user.bio = `${user.firstName } is a ${faker.company.bsAdjective()} ${faker.company.bsNoun()} sort of person. ${ faker.lorem.paragraph(1)} ${ user.lastName } sort of person. ${ faker.lorem.paragraph(1)}. Feel free to contact ${user.fullName } at ${user.email}. ${ faker.lorem.paragraph(1)}`;
     }
   }
 });
@@ -100,6 +107,7 @@ User.generate = (limit)=> {
       firstName: firstName, 
       lastName: lastName,
       middleName: middleName,
+      avatar: faker.image.avatar(),
       email: `${firstName}.${middleName}.${lastName}@${faker.random.arrayElement(domains)}.com`,
       title: faker.name.jobTitle()
     });

@@ -1,5 +1,8 @@
 const { User, Company, Product, CompanyProduct } = require('./db');
 const app = require('express')();
+const ejs = require('ejs');
+app.set('view engine', 'html');
+app.engine('html', ejs.renderFile);
 const cors = require('cors');
 const path = require('path');
 app.use(cors());
@@ -10,7 +13,7 @@ module.exports = app;
 
 const PAGE_SIZE = process.env.PAGE_SIZE || 50;
 
-app.get('/', (req, res, next)=> res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/', async(req, res, next)=> res.render(path.join(__dirname, 'index.html'), { user: await User.findOne()}));
 
 app.get('/api/companies', async(req, res, next)=> {
   res.send(await Company.findAll());
@@ -76,7 +79,18 @@ app.get('/api/users/search/:term/:page?', (req, res, next)=> {
 });
 
 app.get('/api/users/detail/:id', async (req, res, next)=> {
-  return res.send( await User.scope('detail').findByPk(req.params.id));
+  try {
+  const user =  await User.scope('detail').findByPk(req.params.id);
+  if(!user){
+    const error = new Error('user does not exist');
+    error.status = 404;
+    throw error;
+  }
+    return res.send(user);
+  }
+  catch(ex){
+    next(ex);
+  }
 
 });
 
@@ -96,3 +110,7 @@ app.get('/api/users/:page?', (req, res, next)=> {
   .catch(next);
 });
 
+
+app.use((err, req, res, next)=> {
+  res.status(err.status || 500).send({ message: err.message});
+});

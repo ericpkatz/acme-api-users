@@ -20,7 +20,7 @@ app.get('/api/products', async(req, res, next)=> {
   res.send(await Product.findAll());
 });
 
-app.get('/api/company_products', async(req, res, next)=> {
+app.get('/api/offerings', async(req, res, next)=> {
   res.send(await CompanyProduct.findAll());
 });
 

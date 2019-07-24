@@ -9,7 +9,8 @@ const Product = conn.define('product', {
     primaryKey: true
   },
   name: Sequelize.STRING,
-  suggestedPrice: Sequelize.DECIMAL
+  description: Sequelize.TEXT,
+  suggestedPrice: Sequelize.FLOAT
 });
 
 const User = conn.define('user', {
@@ -41,7 +42,7 @@ const User = conn.define('user', {
 });
 
 const CompanyProduct = conn.define('company_product', {
-  price: Sequelize.DECIMAL
+  price: Sequelize.FLOAT
 
 });
 
@@ -110,7 +111,7 @@ const _sync = ()=> conn.sync({ force: true });
 
 const seedProducts = async (companies)=> {
   const names = ['foo', 'bar', 'bazz', 'quq', 'fizz', 'buzz' ];
-  const products = await Promise.all(names.map( name => Product.create({ name, suggestedPrice: faker.random.number(20)  + 3 })));
+  const products = await Promise.all(names.map( name => Product.create({ name, suggestedPrice: faker.random.number(20)  + 3, description: `${faker.commerce.productMaterial()} ${faker.company.catchPhrase()}` })));
   const promises = await Promise.all(companies.map( company => {
     const count = Math.floor(Math.random()*4); 
     const _products = [];

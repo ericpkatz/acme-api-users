@@ -48,6 +48,14 @@ const User = conn.define('user', {
   }
 });
 
+const FollowingCompany = conn.define('following_company', {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true
+  }
+});
+
 const CompanyProduct = conn.define('company_product', {
   price: Sequelize.FLOAT
 
@@ -67,6 +75,9 @@ const Company = conn.define('company', {
 
 CompanyProduct.belongsTo(Product);
 CompanyProduct.belongsTo(Company);
+
+FollowingCompany.belongsTo(User);
+FollowingCompany.belongsTo(Company);
 
 User.belongsTo(Company);
 
@@ -194,7 +205,14 @@ const sync  = {
           title: faker.name.jobTitle()
         };
       })) 
-      .then( users => Promise.all(users.map( user => User.create(user))))
+      .then( async (users) => {
+        const companies = await Promise.all(['Foo Company', 'Bar Company'].map( name => Company.create(name)));
+        const _users = await Promise.all(users.map( user => User.create(user)))
+        return {
+          users: _users,
+          companies
+        };
+      })
   }
 };
 
@@ -203,5 +221,6 @@ module.exports = {
   User,
   Company,
   Product,
-  CompanyProduct
+  CompanyProduct,
+  FollowingCompany
 };

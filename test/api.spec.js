@@ -4,7 +4,47 @@ const { expect } = require('chai');
 const { sync } = require('../db');
 
 describe('API', ()=> {
-  beforeEach(()=> sync.TEST());
+  let seed;
+  beforeEach(async()=> seed = await sync.TEST());
+  describe('/api/users/:id/favoriteCompanies', ()=> {
+    it('returns the users favorite companies', ()=> {
+      return app.get(`/api/users/${seed.users[0].id}/followingCompanies`)
+        .expect(200)
+        .then( response => {
+          expect(response.body).to.eql([]);
+        });
+    });
+  });
+  describe('POST /api/users/:id/favoriteCompanies', ()=> {
+    it('returns the users favorite companies', ()=> {
+      return app.post(`/api/users/${seed.users[0].id}/followingCompanies`)
+        .send({ companyId: seed.companies[1].id})
+        .expect(200)
+        .then( response => {
+          expect(response.body.userId).to.equal(seed.users[0].id);
+          expect(response.body.companyId).to.equal(seed.companies[1].id);
+        });
+    });
+  });
+  describe('DELETE /api/users/:id/favoriteCompanies', ()=> {
+    it('returns the users favorite companies', ()=> {
+      return app.post(`/api/users/${seed.users[0].id}/followingCompanies`)
+        .send({ companyId: seed.companies[1].id})
+        .expect(200)
+        .then( response => {
+          expect(response.body.userId).to.equal(seed.users[0].id);
+          expect(response.body.companyId).to.equal(seed.companies[1].id);
+          return app.delete(`/api/users/${seed.users[0].id}/followingCompanies/${response.body.id}`)
+        })
+        .then( response => {
+          expect(response.status).to.equal(201);
+          return app.get(`/api/users/${seed.users[0].id}/followingCompanies`)
+        })
+        .then( response => {
+          expect(response.body).to.eql([]);
+        });
+    });
+  });
   describe('/api/users with no page given', ()=> {
     it('returns the first page of users and count', ()=> {
       return app.get('/api/users')

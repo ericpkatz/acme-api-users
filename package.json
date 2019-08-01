@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "mocha",
     "test:dev": "DATABASE_URL=postgres://localhost/acme_api_db_test npm run test:mocha -- --watch",
     "test:mocha": "./node_modules/mocha/bin/mocha",
     "start:dev": "SYNC=DEV PORT=3001 DATABASE_URL=postgres://localhost/acme_api_db npm run server:dev",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.0.2"
+    "mocha": "^6.0.2",
+    "supertest": "^4.0.2"
   }
 }

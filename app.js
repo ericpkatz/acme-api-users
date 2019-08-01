@@ -1,5 +1,7 @@
-const { User, Company, Product, CompanyProduct } = require('./db');
-const app = require('express')();
+const { User, Company, Product, CompanyProduct, FollowingCompany } = require('./db');
+const express = require('express');
+const app = express();
+app.use(express.json());
 const ejs = require('ejs');
 app.set('view engine', 'html');
 app.engine('html', ejs.renderFile);
@@ -14,6 +16,40 @@ module.exports = app;
 const PAGE_SIZE = process.env.PAGE_SIZE || 50;
 
 app.get('/', async(req, res, next)=> res.render(path.join(__dirname, 'index.html'), { user: await User.findOne()}));
+
+app.get('/api/users/random', async(req, res, next)=> {
+  const users = await User.findAll();
+  const idx = Math.floor(Math.random()*users.length);
+  res.send(users[idx]);
+});
+
+app.get('/api/users/:id/followingCompanies', async(req, res, next)=> {
+  try {
+    res.send(await FollowingCompany.findAll({ where: { userId: req.params.id}}));
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.post('/api/users/:id/followingCompanies', async(req, res, next)=> {
+  try {
+    res.send(await FollowingCompany.create({ userId: req.params.id, companyId: req.body.companyId}));
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.delete('/api/users/:userId/followingCompanies/:id', async(req, res, next)=> {
+  try {
+    await FollowingCompany.destroy({ where: { userId: req.params.userId, id: req.params.id}});
+    res.sendStatus(201);
+  }
+  catch(ex){
+    next(ex);
+  };
+});
 
 app.get('/api/companies', async(req, res, next)=> {
   res.send(await Company.findAll());
@@ -112,5 +148,6 @@ app.get('/api/users/:page?', (req, res, next)=> {
 
 
 app.use((err, req, res, next)=> {
+  console.log(err);
   res.status(err.status || 500).send({ message: err.message});
 });

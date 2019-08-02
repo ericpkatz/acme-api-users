@@ -29,6 +29,11 @@ describe('API', ()=> {
         .then( response => {
           expect(response.status).to.equal(500);
           expect(response.body.message).to.equal('already being followed');
+          return app.post(`/api/users/${seed.users[0].id}/followingCompanies`)
+            .send({ companyId: seed.companies[0].id})
+        })
+        .then( response => {
+          expect(response.status).to.equal(200);
         });
     });
   });

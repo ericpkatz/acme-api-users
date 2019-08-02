@@ -57,10 +57,11 @@ const FollowingCompany = conn.define('following_company', {
 }, {
   hooks: {
     beforeSave: async function(following){
-      if(!following.companyId || !following.userId){
+      const { companyId, userId } = following;
+      if(!companyId || !userId){
         throw 'companyId and userId are required';
       }
-      const found = await FollowingCompany.findOne({ where: following});
+      const found = await FollowingCompany.findOne({ where: { userId, companyId }});
       if(found){
         throw (new Error('already being followed'));
       }

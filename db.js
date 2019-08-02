@@ -54,6 +54,20 @@ const FollowingCompany = conn.define('following_company', {
     defaultValue: Sequelize.UUIDV4,
     primaryKey: true
   }
+}, {
+  hooks: {
+    beforeSave: async function(following){
+      if(!following.companyId || !following.userId){
+        throw 'companyId and userId are required';
+      }
+      const found = await FollowingCompany.findOne({ where: following});
+      if(found){
+        throw (new Error('already being followed'));
+      }
+
+
+    }
+  }
 });
 
 const CompanyProduct = conn.define('company_product', {

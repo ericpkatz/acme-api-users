@@ -1,4 +1,4 @@
-const { User, Company, Product, CompanyProduct, FollowingCompany } = require('./db');
+const { User, Company, Product, CompanyProduct, FollowingCompany, CompanyProfits } = require('./db');
 const express = require('express');
 const app = express();
 app.use(express.json());
@@ -16,6 +16,19 @@ module.exports = app;
 const PAGE_SIZE = process.env.PAGE_SIZE || 50;
 
 app.get('/', async(req, res, next)=> res.render(path.join(__dirname, 'index.html'), { user: await User.findOne()}));
+
+app.get('/api/companyProfits', async(req, res, next)=> {
+  const profits = await CompanyProfits.findAll({
+  });
+  res.send(profits);
+});
+
+app.get('/api/companies/:id/companyProfits', async(req, res, next)=> {
+  const profits = await CompanyProfits.findAll({
+    where: { companyId: req.params.id } 
+  });
+  res.send(profits);
+});
 
 app.get('/api/users/random', async(req, res, next)=> {
   const users = await User.findAll();

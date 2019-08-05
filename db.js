@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const conn = new Sequelize(process.env.DATABASE_URL, { logging: false });
 const faker = require('faker');
+const moment = require('moment');
 
 const Product = conn.define('product', {
   id: {
@@ -73,7 +74,6 @@ const FollowingCompany = conn.define('following_company', {
 
 const CompanyProduct = conn.define('company_product', {
   price: Sequelize.FLOAT
-
 });
 
 const Company = conn.define('company', {
@@ -86,8 +86,33 @@ const Company = conn.define('company', {
   phone: Sequelize.STRING,
   state: Sequelize.STRING,
   catchPhrase: Sequelize.STRING
+}, {
+  hooks: {
+    afterCreate: function(company){
+      const limit = faker.random.number({ min: 1, max: 3});
+      const yearEnds = [];
+      const idx = 1;
+      while(yearEnds.length < limit){
+        const amount = faker.finance.amount(-2000, 5000, 2)*1;
+        const fiscalYear = moment().add((yearEnds.length + 1)*(-1), 'year').endOf('year');
+        yearEnds.push({ companyId: company.id, amount, fiscalYear });
+      }
+      return Promise.all(yearEnds.map( yearEnd => CompanyProfits.create(yearEnd)));
+    }
+  }
 });
 
+const CompanyProfits = conn.define('companyProfits', {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true
+  },
+  fiscalYear: Sequelize.DATE,
+  amount: Sequelize.FLOAT
+});
+
+CompanyProfits.belongsTo(Company);
 CompanyProduct.belongsTo(Product);
 CompanyProduct.belongsTo(Company);
 
@@ -237,5 +262,6 @@ module.exports = {
   Company,
   Product,
   CompanyProduct,
-  FollowingCompany
+  FollowingCompany,
+  CompanyProfits
 };

@@ -17,6 +17,20 @@ describe('API', ()=> {
   });
   describe('POST /api/users/:id/favoriteCompanies', ()=> {
     it('returns the users favorite companies', ()=> {
+      return app.get(`/api/companies/${seed.companies[0].id}/companyProfits`)
+        .expect(200)
+        .then( response => {
+          expect(response.body.length).to.be.ok;
+          /*
+          expect(response.body.companyId).to.equal(seed.companies[1].id);
+          return app.post(`/api/users/${seed.users[0].id}/followingCompanies`)
+            .send({ companyId: seed.companies[1].id})
+            */
+        })
+    });
+  });
+  describe('POST /api/users/:id/favoriteCompanies', ()=> {
+    it('returns the users favorite companies', ()=> {
       return app.post(`/api/users/${seed.users[0].id}/followingCompanies`)
         .send({ companyId: seed.companies[1].id})
         .expect(200)

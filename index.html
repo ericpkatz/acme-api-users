@@ -7,6 +7,55 @@
     <h1>Acme Users API - Endpoints</h1>
     <ul class='list-group'>
       <li class='list-group-item list-group-item-primary'>
+        Endpoint /users/random
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/random' target='_api'>/api/users/random</a>
+        Returns a random user
+      </li>
+      <li class='list-group-item list-group-item-primary'>
+        Endpoint /users/detail/:id - returns the user details including bio 
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/detail/<%= user.id %>'>/api/users/detail/<%= user.id %></a>
+        Returns user including bio.
+      </li>
+      <li class='list-group-item list-group-item-primary'>
+        Endpoint /companies
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/companies'>/api/companies</a>
+        Returns all the companies
+      </li>
+      <li class='list-group-item list-group-item-primary'>
+        Endpoint /companies/random
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/companies/random' target='_api'>/api/companies/random</a>
+        Returns a random company
+      </li>
+      <li class='list-group-item list-group-item-primary'>
+        Endpoint /companies/:id/companyProfits
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/companies/<%=company.id %>/companyProfits' target='_api'>/api/companies/:id/companyProfits</a>
+        Returns yearly data for the company profits
+      </li>
+      <li class='list-group-item list-group-item-primary'>
+        Endpoint /products returns all the products
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/products'>/api/products</a>
+        Returns all the products
+      </li>
+      <li class='list-group-item list-group-item-primary'>
+        Endpoint /offerings
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/offerings'>/api/offerings</a>
+        Returns company offerings. Each item includes a companyId, a productId and the price of the product
+      </li>
+      <li class='list-group-item list-group-item-primary'>
         Endpoint /users/:idx? (defaults to 0)
       </li>
       <li class='list-group-item'>
@@ -20,13 +69,6 @@
       <li class='list-group-item'>
         <a href='/api/users/2'>/api/users/2</a>
         Third 50 users and total count (users 101 to 150)
-      </li>
-      <li class='list-group-item list-group-item-primary'>
-        Endpoint /users/detail/:id - returns the user details including bio 
-      </li>
-      <li class='list-group-item'>
-        <a href='/api/users/detail/<%= user.id %>'>/api/users/detail/<%= user.id %></a>
-        Returns user including bio.
       </li>
       <li class='list-group-item list-group-item-primary'>
         Endpoint /users/search/:term/:idx? (defaults to 0)
@@ -46,27 +88,6 @@
       <li class='list-group-item'>
         <a href='/api/users/search/Pro/1'>/api/users/search/Pro/1</a>
         Second 50 users who have the word Pro in their name, email or job titles and total count of users who match criteria.
-      </li>
-      <li class='list-group-item list-group-item-primary'>
-        Endpoint /products returns all the products
-      </li>
-      <li class='list-group-item'>
-        <a href='/api/products'>/api/products</a>
-        Returns all the products
-      </li>
-      <li class='list-group-item list-group-item-primary'>
-        Endpoint /companies
-      </li>
-      <li class='list-group-item'>
-        <a href='/api/companies'>/api/companies</a>
-        Returns all the companies
-      </li>
-      <li class='list-group-item list-group-item-primary'>
-        Endpoint /offerings
-      </li>
-      <li class='list-group-item'>
-        <a href='/api/offerings'>/api/offerings</a>
-        Returns company offerings. Each item includes a companyId, a productId and the price of the product
       </li>
     </ul>
     </div>

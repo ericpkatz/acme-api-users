@@ -15,13 +15,7 @@ module.exports = app;
 
 const PAGE_SIZE = process.env.PAGE_SIZE || 50;
 
-app.get('/', async(req, res, next)=> res.render(path.join(__dirname, 'index.html'), { user: await User.findOne()}));
-
-app.get('/api/companyProfits', async(req, res, next)=> {
-  const profits = await CompanyProfits.findAll({
-  });
-  res.send(profits);
-});
+app.get('/', async(req, res, next)=> res.render(path.join(__dirname, 'index.html'), { user: await User.findOne(), company: await Company.findOne()}));
 
 app.get('/api/companies/:id/companyProfits', async(req, res, next)=> {
   const profits = await CompanyProfits.findAll({
@@ -36,6 +30,12 @@ app.get('/api/users/random', async(req, res, next)=> {
   res.send(users[idx]);
 });
 
+app.get('/api/companies/random', async(req, res, next)=> {
+  const companies = await Company.findAll();
+  const idx = Math.floor(Math.random()*companies.length);
+  res.send(companies[idx]);
+});
+
 app.get('/api/users/:id/followingCompanies', async(req, res, next)=> {
   try {
     res.send(await FollowingCompany.findAll({ where: { userId: req.params.id}}));
@@ -46,8 +46,21 @@ app.get('/api/users/:id/followingCompanies', async(req, res, next)=> {
 });
 
 app.post('/api/users/:id/followingCompanies', async(req, res, next)=> {
+  console.log(req.body);
   try {
-    res.send(await FollowingCompany.create({ userId: req.params.id, companyId: req.body.companyId}));
+    res.send(await FollowingCompany.create({ userId: req.params.id, companyId: req.body.companyId, rating: req.body.rating}));
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.put('/api/users/:userId/followingCompanies/:id', async(req, res, next)=> {
+  console.log(req.body);
+  try {
+    const followed = await FollowingCompany.findByPk(req.params.id);
+    await followed.update(req.body);
+    res.send(followed);
   }
   catch(ex){
     next(ex);

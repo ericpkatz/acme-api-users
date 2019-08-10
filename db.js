@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const conn = new Sequelize(process.env.DATABASE_URL, { logging: false });
+const conn = new Sequelize(process.env.DATABASE_URL, { logging: true });
 const faker = require('faker');
 const moment = require('moment');
 
@@ -54,20 +54,30 @@ const FollowingCompany = conn.define('following_company', {
     type: Sequelize.UUID,
     defaultValue: Sequelize.UUIDV4,
     primaryKey: true
+  },
+  rating: {
+    type: Sequelize.INTEGER,
+    defaultValue: 3,
+    allowNull: false,
   }
 }, {
   hooks: {
+    beforeCreate: async function(following){
+      const count = await FollowingCompany.count({ where: { userId: following.userId }});
+      if(count >= 5){
+        throw 'user is already following 5 companies';
+      }
+
+    },
     beforeSave: async function(following){
       const { companyId, userId } = following;
       if(!companyId || !userId){
         throw 'companyId and userId are required';
       }
-      const found = await FollowingCompany.findOne({ where: { userId, companyId }});
+      const found = await FollowingCompany.findOne({ where: { userId, companyId, id : { [Sequelize.Op.ne]: following.id } }});
       if(found){
         throw (new Error('already being followed'));
       }
-
-
     }
   }
 });
@@ -172,7 +182,7 @@ const seedProducts = async (companies)=> {
   const names = ['foo', 'bar', 'bazz', 'quq', 'fizz', 'buzz' ];
   const products = await Promise.all(names.map( name => Product.create({ name, suggestedPrice: faker.random.number(20)  + 3, description: `${faker.commerce.productMaterial()} ${faker.company.catchPhrase()}` })));
   const promises = await Promise.all(companies.map( company => {
-    const count = Math.floor(Math.random()*4); 
+    const count = Math.ceil(Math.random()*3); 
     const _products = [];
     while(_products.length < count){
       const random = faker.random.arrayElement(products); 
@@ -185,6 +195,25 @@ const seedProducts = async (companies)=> {
 
 };
 
+const _seed = async({ seedCompanies, seedUsers })=> {
+  const companies = await Promise.all(seedCompanies.map( company => Company.create(company)))
+  const products = await seedProducts(companies);
+  seedUsers.forEach( user => user.companyId = faker.random.arrayElement(companies).id);
+  const users = await Promise.all(seedUsers.map( user => User.create(user)))
+  console.log('//TODO - have each user follow several companies');
+  await Promise.all(users.map( user => {
+    const count = Math.floor(Math.random()*4); 
+    const _following = [];
+    while(_following.length < count){
+      const random = faker.random.arrayElement(companies); 
+      if(!_following.includes(random)){
+        _following.push(random);
+      }
+    }
+    return Promise.all(_following.map( f => FollowingCompany.create({ userId: user.id, companyId: f.id, rating: faker.random.number({ min: 1, max: 5})})));
+  }));
+}
+
 const sync  = {
   DEV: function(){
     console.log('sync dev starting');
@@ -192,10 +221,7 @@ const sync  = {
     const seedCompanies = Company.generate(8 + faker.random.number(3));
     return _sync({force: true })
       .then( async()=> {
-        const companies = await Promise.all(seedCompanies.map( company => Company.create(company)))
-        const products = await seedProducts(companies);
-        seedUsers.forEach( user => user.companyId = faker.random.arrayElement(companies).id);
-        const users = await Promise.all(seedUsers.map( user => User.create(user)))
+        await _seed({ seedCompanies, seedProducts, seedUsers });
       });
   },
   BIG: function(){
@@ -204,10 +230,7 @@ const sync  = {
     const seedCompanies = Company.generate(30 + faker.random.number(10));
     return _sync({force: true })
       .then( async()=> {
-        const companies = await Promise.all(seedCompanies.map( company => Company.create(company)))
-        const products = await seedProducts(companies);
-        seedUsers.forEach( user => user.companyId = faker.random.arrayElement(companies).id);
-        const users = await Promise.all(seedUsers.map( user => User.create(user)))
+        await _seed({ seedCompanies, seedProducts, seedUsers });
       });
   },
   TEST: function(){

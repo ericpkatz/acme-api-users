@@ -17,8 +17,22 @@
         Endpoint /users/detail/:id - returns the user details including bio 
       </li>
       <li class='list-group-item'>
-        <a href='/api/users/detail/<%= user.id %>'>/api/users/detail/<%= user.id %></a>
+        <a href='/api/users/detail/<%= user.id %>'>/api/users/detail/:id</a>
         Returns user including bio.
+      </li>
+      <li class='list-group-item list-group-item-primary'>
+        Endpoint /users/:id/notes - return the notes from a user 
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/<%= user.id %>/notes'>/api/users/:id/notes</a>
+        Returns the notes from a user
+      </li>
+      <li class='list-group-item list-group-item-primary'>
+        Endpoint /users/:id/followingCompanies - return the companies a user is following 
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/<%= user.id %>/followingCompanies'>/api/users/:id/followingCompanies</a>
+        Returns the companies a user is following.
       </li>
       <li class='list-group-item list-group-item-primary'>
         Endpoint /companies

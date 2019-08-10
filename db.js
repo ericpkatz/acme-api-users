@@ -14,6 +14,41 @@ const Product = conn.define('product', {
   suggestedPrice: Sequelize.FLOAT
 });
 
+const Note = conn.define('note', {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true
+  },
+  archived: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+    allowNull: false
+  },
+  text: {
+    type: Sequelize.STRING(255*2),
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
+  }
+}, {
+  hooks: {
+    beforeCreate: async function(note){
+      const count = await Note.count({ where: { userId: note.userId }});
+      if(count >= 5){
+        throw 'user can only have a max of 5 notes';
+      }
+    },
+    beforeSave: function(note){
+      if(!note.userId){
+        throw 'note must belong to a user';
+      }
+
+    }
+  }
+});
+
 const User = conn.define('user', {
   id: {
     type: Sequelize.UUID,
@@ -130,6 +165,7 @@ FollowingCompany.belongsTo(User);
 FollowingCompany.belongsTo(Company);
 
 User.belongsTo(Company);
+Note.belongsTo(User);
 
 const domains = [
   'google',
@@ -178,6 +214,31 @@ User.generate = (limit)=> {
 
 const _sync = ()=> conn.sync({ force: true });
 
+const seedFollowing = ({ users, companies })=> {
+  return Promise.all(users.map( user => {
+    const count = Math.ceil(Math.random()*4); 
+    const _following = [];
+    while(_following.length < count){
+      const random = faker.random.arrayElement(companies); 
+      if(!_following.includes(random)){
+        _following.push(random);
+      }
+    }
+    return Promise.all(_following.map( f => FollowingCompany.create({ userId: user.id, companyId: f.id, rating: faker.random.number({ min: 1, max: 5})})));
+  }));
+};
+
+const seedNotes = ({ users })=> {
+  return Promise.all(users.map( user => {
+    const count = Math.ceil(Math.random()*4); 
+    const _notes = [];
+    while(_notes.length < count){
+      _notes.push({ text: `${faker.lorem.words(2)} - ${ user.email } ${faker.lorem.words(3)}`, userId: user.id, archived: faker.random.boolean()}); 
+    }
+    return Promise.all(_notes.map( note => Note.create(note)));
+  }));
+};
+
 const seedProducts = async (companies)=> {
   const names = ['foo', 'bar', 'bazz', 'quq', 'fizz', 'buzz' ];
   const products = await Promise.all(names.map( name => Product.create({ name, suggestedPrice: faker.random.number(20)  + 3, description: `${faker.commerce.productMaterial()} ${faker.company.catchPhrase()}` })));
@@ -200,18 +261,8 @@ const _seed = async({ seedCompanies, seedUsers })=> {
   const products = await seedProducts(companies);
   seedUsers.forEach( user => user.companyId = faker.random.arrayElement(companies).id);
   const users = await Promise.all(seedUsers.map( user => User.create(user)))
-  console.log('//TODO - have each user follow several companies');
-  await Promise.all(users.map( user => {
-    const count = Math.floor(Math.random()*4); 
-    const _following = [];
-    while(_following.length < count){
-      const random = faker.random.arrayElement(companies); 
-      if(!_following.includes(random)){
-        _following.push(random);
-      }
-    }
-    return Promise.all(_following.map( f => FollowingCompany.create({ userId: user.id, companyId: f.id, rating: faker.random.number({ min: 1, max: 5})})));
-  }));
+  await seedFollowing({ users, companies });
+  await seedNotes({ users });
 }
 
 const sync  = {
@@ -286,5 +337,6 @@ module.exports = {
   Product,
   CompanyProduct,
   FollowingCompany,
-  CompanyProfits
+  CompanyProfits,
+  Note
 };

@@ -1,4 +1,4 @@
-const { User, Company, Product, CompanyProduct, FollowingCompany, CompanyProfits } = require('./db');
+const { Note, User, Company, Product, CompanyProduct, FollowingCompany, CompanyProfits } = require('./db');
 const express = require('express');
 const app = express();
 app.use(express.json());
@@ -15,7 +15,11 @@ module.exports = app;
 
 const PAGE_SIZE = process.env.PAGE_SIZE || 50;
 
-app.get('/', async(req, res, next)=> res.render(path.join(__dirname, 'index.html'), { user: await User.findOne(), company: await Company.findOne()}));
+app.get('/', async(req, res, next)=> {
+  const users = await User.findAll();
+  const idx = Math.floor(Math.random()*users.length);
+  res.render(path.join(__dirname, 'index.html'), { user: users[idx], company: await Company.findOne()})
+});
 
 app.get('/api/companies/:id/companyProfits', async(req, res, next)=> {
   const profits = await CompanyProfits.findAll({
@@ -36,6 +40,15 @@ app.get('/api/companies/random', async(req, res, next)=> {
   res.send(companies[idx]);
 });
 
+app.get('/api/users/:id/notes', async(req, res, next)=> {
+  try {
+    res.send(await Note.findAll({ where: { userId: req.params.id}}));
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
 app.get('/api/users/:id/followingCompanies', async(req, res, next)=> {
   try {
     res.send(await FollowingCompany.findAll({ where: { userId: req.params.id}}));
@@ -46,7 +59,6 @@ app.get('/api/users/:id/followingCompanies', async(req, res, next)=> {
 });
 
 app.post('/api/users/:id/followingCompanies', async(req, res, next)=> {
-  console.log(req.body);
   try {
     res.send(await FollowingCompany.create({ userId: req.params.id, companyId: req.body.companyId, rating: req.body.rating}));
   }

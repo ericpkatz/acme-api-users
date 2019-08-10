@@ -6,6 +6,26 @@ const { sync } = require('../db');
 describe('API', ()=> {
   let seed;
   beforeEach(async()=> seed = await sync.TEST());
+  describe('/api/users/:id/followingCompanies', ()=> {
+    xit('user can only follow 5 companies', ()=> {
+    });
+    xit('user can follow a company', ()=> {
+    });
+    xit('user can unfollow a company', ()=> {
+    });
+    xit('user can update a following', ()=> {
+    });
+  });
+  describe('/api/users/:id/notes', ()=> {
+    xit('user can only have 5 notes', ()=> {
+    });
+    xit('user can create a note', ()=> {
+    });
+    xit('user can update a note', ()=> {
+    });
+    xit('user can delete a note', ()=> {
+    });
+  });
   describe('/api/users/:id/favoriteCompanies', ()=> {
     it('returns the users favorite companies', ()=> {
       return app.get(`/api/users/${seed.users[0].id}/followingCompanies`)

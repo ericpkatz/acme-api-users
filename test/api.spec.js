@@ -1,93 +1,91 @@
 process.env.PAGE_SIZE = 2;
 const app = require('supertest')(require('../app'));
 const { expect } = require('chai');
-const { sync } = require('../db');
+const { sync, FollowingCompany, Note } = require('../db');
 
 describe('API', ()=> {
   let seed;
   beforeEach(async()=> seed = await sync.TEST());
   describe('/api/users/:id/followingCompanies', ()=> {
-    xit('user can only follow 5 companies', ()=> {
+    let following;
+    beforeEach(async()=> {
+      const user = seed.users[0];
+      const companies = seed.companies.slice(0, 5);
+      following = await Promise.all(companies.map( company => FollowingCompany.create({ userId: user.id, companyId: company.id})));
     });
-    xit('user can follow a company', ()=> {
+    it('user can only follow 5 companies', ()=> {
+      return app.post(`/api/users/${seed.users[0].id}/followingCompanies/`)
+        .send({
+          companyId: seed.companies[5].id
+        })
+        .expect(500)
+        .then( response => {
+          expect(response.body.message).to.equal('user is already following 5 companies');
+        });
     });
-    xit('user can unfollow a company', ()=> {
+    it('User can follow a company', async()=> {
+      return app.delete(`/api/users/${seed.users[0].id}/followingCompanies/${following[0].id}`)
+      .expect(204)
+      .then(()=> {
+        return app.post(`/api/users/${seed.users[0].id}/followingCompanies/`)
+          .send({
+            companyId: following[0].companyId
+          })
+      })
+      .then( response => {
+        expect(response.status).to.equal(201);
+      });
+
     });
-    xit('user can update a following', ()=> {
+    it('user can unfollow a company', ()=> {
+      return app.delete(`/api/users/${seed.users[0].id}/followingCompanies/${following[0].id}`)
+      .expect(204);
+    });
+    it('user can update a following', ()=> {
+      return app.put(`/api/users/${seed.users[0].id}/followingCompanies/${following[0].id}`)
+      .send({ rating: 1 })
+      .expect(200)
+      .then( response => {
+        expect(response.body.rating).to.equal(1);
+      });
     });
   });
   describe('/api/users/:id/notes', ()=> {
-    xit('user can only have 5 notes', ()=> {
+    let notes, user;
+    beforeEach(async()=> {
+      user = seed.users[0];
+      const texts = ['foo', 'bar', 'bazz', 'quq','bug']; 
+      notes = await Promise.all(texts.map( text => Note.create({ userId: user.id, text })));
     });
-    xit('user can create a note', ()=> {
-    });
-    xit('user can update a note', ()=> {
-    });
-    xit('user can delete a note', ()=> {
-    });
-  });
-  describe('/api/users/:id/favoriteCompanies', ()=> {
-    it('returns the users favorite companies', ()=> {
-      return app.get(`/api/users/${seed.users[0].id}/followingCompanies`)
-        .expect(200)
+    it('user can only have 5 notes', ()=> {
+      return app.post(`/api/users/${ user.id }/notes`)
+        .send({ text: 'hi' })
+        .expect(500)
         .then( response => {
-          expect(response.body).to.eql([]);
+          expect(response.body.message).to.equal('user can only have a max of 5 notes');
         });
     });
-  });
-  describe('POST /api/users/:id/favoriteCompanies', ()=> {
-    it('returns the users favorite companies', ()=> {
-      return app.get(`/api/companies/${seed.companies[0].id}/companyProfits`)
-        .expect(200)
+    it('user can create a note', async()=> {
+      await notes[0].destroy();   
+      return app.post(`/api/users/${ user.id }/notes`)
+        .send({ text: 'hi' })
+        .expect(201)
         .then( response => {
-          expect(response.body.length).to.be.ok;
-          /*
-          expect(response.body.companyId).to.equal(seed.companies[1].id);
-          return app.post(`/api/users/${seed.users[0].id}/followingCompanies`)
-            .send({ companyId: seed.companies[1].id})
-            */
-        })
-    });
-  });
-  describe('POST /api/users/:id/favoriteCompanies', ()=> {
-    it('returns the users favorite companies', ()=> {
-      return app.post(`/api/users/${seed.users[0].id}/followingCompanies`)
-        .send({ companyId: seed.companies[1].id})
-        .expect(200)
-        .then( response => {
-          expect(response.body.userId).to.equal(seed.users[0].id);
-          expect(response.body.companyId).to.equal(seed.companies[1].id);
-          return app.post(`/api/users/${seed.users[0].id}/followingCompanies`)
-            .send({ companyId: seed.companies[1].id})
-        })
-        .then( response => {
-          expect(response.status).to.equal(500);
-          expect(response.body.message).to.equal('already being followed');
-          return app.post(`/api/users/${seed.users[0].id}/followingCompanies`)
-            .send({ companyId: seed.companies[0].id})
-        })
-        .then( response => {
-          expect(response.status).to.equal(200);
+          expect(response.body.text).to.equal('hi');
         });
     });
-  });
-  describe('DELETE /api/users/:id/favoriteCompanies', ()=> {
-    it('returns the users favorite companies', ()=> {
-      return app.post(`/api/users/${seed.users[0].id}/followingCompanies`)
-        .send({ companyId: seed.companies[1].id})
+    it('user can update a note', ()=> {
+      return app.put(`/api/users/${ user.id }/notes/${notes[0].id}`)
+        .send({ text: 'buh bye', archived: true })
         .expect(200)
         .then( response => {
-          expect(response.body.userId).to.equal(seed.users[0].id);
-          expect(response.body.companyId).to.equal(seed.companies[1].id);
-          return app.delete(`/api/users/${seed.users[0].id}/followingCompanies/${response.body.id}`)
-        })
-        .then( response => {
-          expect(response.status).to.equal(201);
-          return app.get(`/api/users/${seed.users[0].id}/followingCompanies`)
-        })
-        .then( response => {
-          expect(response.body).to.eql([]);
+          expect(response.body.text).to.equal('buh bye');
+          expect(response.body.archived).to.equal(true);
         });
+    });
+    it('user can delete a note', ()=> {
+      return app.delete(`/api/users/${ user.id }/notes/${notes[0].id}`)
+        .expect(204)
     });
   });
   describe('/api/users with no page given', ()=> {

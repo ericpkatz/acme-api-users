@@ -49,6 +49,38 @@ app.get('/api/users/:id/notes', async(req, res, next)=> {
   };
 });
 
+app.post('/api/users/:id/notes', async(req, res, next)=> {
+  try {
+    res.status(201).send(await Note.create({ userId: req.params.id, text: req.body.text, archived: req.body.archived}));
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.put('/api/users/:userId/notes/:id', async(req, res, next)=> {
+  try {
+    const note = await Note.findByPk(req.params.id);
+    await note.update(req.body);
+    res.send(note);
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.delete('/api/users/:userId/notes/:id', async(req, res, next)=> {
+  try {
+    await Note.destroy({ where: { userId: req.params.userId, id: req.params.id}});
+    res.sendStatus(204);
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+//TODO - routes for notes
+//
 app.get('/api/users/:id/followingCompanies', async(req, res, next)=> {
   try {
     res.send(await FollowingCompany.findAll({ where: { userId: req.params.id}}));
@@ -60,7 +92,7 @@ app.get('/api/users/:id/followingCompanies', async(req, res, next)=> {
 
 app.post('/api/users/:id/followingCompanies', async(req, res, next)=> {
   try {
-    res.send(await FollowingCompany.create({ userId: req.params.id, companyId: req.body.companyId, rating: req.body.rating}));
+    res.status(201).send(await FollowingCompany.create({ userId: req.params.id, companyId: req.body.companyId, rating: req.body.rating}));
   }
   catch(ex){
     next(ex);
@@ -68,7 +100,6 @@ app.post('/api/users/:id/followingCompanies', async(req, res, next)=> {
 });
 
 app.put('/api/users/:userId/followingCompanies/:id', async(req, res, next)=> {
-  console.log(req.body);
   try {
     const followed = await FollowingCompany.findByPk(req.params.id);
     await followed.update(req.body);
@@ -82,7 +113,7 @@ app.put('/api/users/:userId/followingCompanies/:id', async(req, res, next)=> {
 app.delete('/api/users/:userId/followingCompanies/:id', async(req, res, next)=> {
   try {
     await FollowingCompany.destroy({ where: { userId: req.params.userId, id: req.params.id}});
-    res.sendStatus(201);
+    res.sendStatus(204);
   }
   catch(ex){
     next(ex);

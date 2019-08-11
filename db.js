@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const conn = new Sequelize(process.env.DATABASE_URL, { logging: true });
+const conn = new Sequelize(process.env.DATABASE_URL, { logging: false });
 const faker = require('faker');
 const moment = require('moment');
 
@@ -37,7 +37,7 @@ const Note = conn.define('note', {
     beforeCreate: async function(note){
       const count = await Note.count({ where: { userId: note.userId }});
       if(count >= 5){
-        throw 'user can only have a max of 5 notes';
+        throw ({ message: 'user can only have a max of 5 notes' });
       }
     },
     beforeSave: function(note){
@@ -100,7 +100,7 @@ const FollowingCompany = conn.define('following_company', {
     beforeCreate: async function(following){
       const count = await FollowingCompany.count({ where: { userId: following.userId }});
       if(count >= 5){
-        throw 'user is already following 5 companies';
+        throw ({ message: 'user is already following 5 companies'});
       }
 
     },
@@ -163,6 +163,8 @@ CompanyProduct.belongsTo(Company);
 
 FollowingCompany.belongsTo(User);
 FollowingCompany.belongsTo(Company);
+
+User.hasMany(FollowingCompany);
 
 User.belongsTo(Company);
 Note.belongsTo(User);
@@ -320,7 +322,7 @@ const sync  = {
         };
       })) 
       .then( async (users) => {
-        const companies = await Promise.all(['Foo Company', 'Bar Company'].map( name => Company.create(name)));
+        const companies = await Promise.all(['Foo Company', 'Bar Company', 'Bazz', 'Quq', 'Meep', 'Beep'].map( name => Company.create(name)));
         const _users = await Promise.all(users.map( user => User.create(user)))
         return {
           users: _users,

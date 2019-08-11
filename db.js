@@ -42,7 +42,7 @@ const Note = conn.define('note', {
     },
     beforeSave: function(note){
       if(!note.userId){
-        throw 'note must belong to a user';
+        throw ({ message: 'note must belong to a user'});
       }
 
     }

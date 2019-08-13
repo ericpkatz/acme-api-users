@@ -21,18 +21,57 @@
         Returns user including bio.
       </li>
       <li class='list-group-item list-group-item-primary'>
-        Endpoint /users/:id/notes - return the notes from a user 
+        Endpoint /users/:id/notes 
       </li>
       <li class='list-group-item'>
         <a href='/api/users/<%= user.id %>/notes'>/api/users/:id/notes</a>
         Returns the notes from a user
       </li>
+      <li class='list-group-item'>
+        POST /api/users/:userId/notes
+        <br />
+        PAYLOAD { archived: boolean, text: string } 
+        <br />
+        returns the created note
+        <br />
+      </li>
+      <li class='list-group-item'>
+        PUT /api/users/:userId/notes/:noteId
+        <br />
+        PAYLOAD { archived: boolean, text: string } 
+        <br />
+        returns the updated note
+      </li>
+      <li class='list-group-item'>
+        DELETE /api/users/:userId/notes/:noteId
+        <br />
+        returns nothing 
+      </li>
       <li class='list-group-item list-group-item-primary'>
-        Endpoint /users/:id/followingCompanies - return the companies a user is following 
+        Endpoint /users/:id/followingCompanies
       </li>
       <li class='list-group-item'>
         <a href='/api/users/<%= user.id %>/followingCompanies'>/api/users/:id/followingCompanies</a>
         Returns the companies a user is following.
+      </li>
+      <li class='list-group-item'>
+        POST /api/users/:userId/followingCompanies
+        <br />
+        PAYLOAD { rating: number, companyId: UUID } 
+        <br />
+        returns the created following 
+      </li>
+      <li class='list-group-item'>
+        PUT /api/users/:userId/followingCompanies/:followingId
+        <br />
+        PAYLOAD { rating: number, companyId: UUID } 
+        <br />
+        returns the updated following 
+      </li>
+      <li class='list-group-item'>
+        DELETE /api/users/:userId/followingCompanies/:followingId
+        <br />
+        returns nothing 
       </li>
       <li class='list-group-item list-group-item-primary'>
         Endpoint /companies

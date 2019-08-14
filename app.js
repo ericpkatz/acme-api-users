@@ -27,7 +27,7 @@ const PAGE_SIZE = process.env.PAGE_SIZE || 50;
 app.get('/', async(req, res, next)=> {
   const users = await User.findAll();
   const idx = Math.floor(Math.random()*users.length);
-  res.render(path.join(__dirname, 'index.html'), { user: users[idx], company: await Company.findOne()})
+  res.render(path.join(__dirname, 'index.html'), { user: users[idx], company: await Company.findOne(), ENV: process.env.ENV || ''})
 });
 
 app.get('/api/companies/:id/companyProfits', async(req, res, next)=> {

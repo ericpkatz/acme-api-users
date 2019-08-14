@@ -277,7 +277,8 @@ const sync  = {
         await _seed({ seedCompanies, seedProducts, seedUsers });
       });
   },
-  BIG: function(){
+  BIG: async function(){
+    await _sync();
     console.log('sync big starting');
     const seedUsers = User.generate(1000 + faker.random.number(300));
     const seedCompanies = Company.generate(30 + faker.random.number(10));

@@ -1,7 +1,8 @@
 process.env.PAGE_SIZE = 2;
 const app = require('supertest')(require('../app'));
 const { expect } = require('chai');
-const { sync, FollowingCompany, Note } = require('../db');
+const { sync, FollowingCompany, Note, Vacation } = require('../db');
+const moment = require('moment');
 
 describe('API', ()=> {
   let seed;
@@ -48,6 +49,65 @@ describe('API', ()=> {
       .then( response => {
         expect(response.body.rating).to.equal(1);
       });
+    });
+  });
+  describe('/api/users/:id/notes', ()=> {
+    let vacations, user;
+    beforeEach(async()=> {
+      user = seed.users[0];
+      const _vacations = [
+        { startDate: moment(), endDate: moment()},
+        { startDate: moment(), endDate: moment()},
+        { startDate: moment(), endDate: moment()},
+      ]; 
+      vacations = await Promise.all(_vacations.map( vacation => Vacation.create({ ...vacation, userId: user.id })));
+    });
+    it('user can get vacations', ()=> {
+      return app.get(`/api/users/${ user.id }/vacations`)
+        .expect(200)
+        .then( response => {
+          expect(response.body.length).to.equal(3);
+        });
+    });
+    it('user can only have 3 vacations', ()=> {
+      return app.post(`/api/users/${ user.id }/vacations`)
+        .send({ startDate: moment(), endDate: moment()})
+        .expect(500)
+        .then( response => {
+          expect(response.body.message).to.equal('user already has 3 vacations');
+        });
+    });
+    it('user can create a vacation', async()=> {
+      await vacations[0].destroy();   
+      return app.post(`/api/users/${ user.id }/vacations`)
+        .send({ startDate: moment(), endDate: moment() })
+        .expect(201)
+        .then( response => {
+          expect(response.body.startDate).to.be.ok;
+          expect(response.body.endDate).to.be.ok;
+        });
+    });
+    it('end date can not be less than start date', async()=> {
+      await vacations[0].destroy();   
+      return app.post(`/api/users/${ user.id }/vacations`)
+        .send({ startDate: moment().add(1, 'days'), endDate: moment() })
+        .expect(500)
+        .then( response => {
+          expect(response.body.message).to.equal('end date is less than start date');
+        });
+    });
+    it('user can update a vacation', ()=> {
+      return app.put(`/api/users/${ user.id }/vacations/${vacations[0].id}`)
+        .send({ startDate: moment(), endDate: moment()})
+        .expect(200)
+        .then( response => {
+          expect(response.body.startDate).to.be.ok;
+          expect(response.body.endDate).to.be.ok;
+        });
+    });
+    it('user can delete a vacation', ()=> {
+      return app.delete(`/api/users/${ user.id }/vacations/${vacations[0].id}`)
+        .expect(204)
     });
   });
   describe('/api/users/:id/notes', ()=> {

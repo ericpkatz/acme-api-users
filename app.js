@@ -1,4 +1,4 @@
-const { Note, User, Company, Product, CompanyProduct, FollowingCompany, CompanyProfits } = require('./db');
+const { Note, User, Company, Product, CompanyProduct, FollowingCompany, CompanyProfits, Vacation } = require('./db');
 const express = require('express');
 const app = express();
 app.use(express.json());
@@ -47,6 +47,45 @@ app.get('/api/companies/random', async(req, res, next)=> {
   const companies = await Company.findAll();
   const idx = Math.floor(Math.random()*companies.length);
   res.send(companies[idx]);
+});
+
+app.get('/api/users/:id/vacations', async(req, res, next)=> {
+  try {
+    res.send(await Vacation.findAll({ where: { userId: req.params.id }}));
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.post('/api/users/:id/vacations', async(req, res, next)=> {
+  try {
+    res.status(201).send(await Vacation.create({ userId: req.params.id, ...req.body}));
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.put('/api/users/:userId/vacations/:id', async(req, res, next)=> {
+  try {
+    const vacation = await Vacation.findByPk(req.params.id);
+    await vacation.update(req.body);
+    res.send(vacation);
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.delete('/api/users/:userId/vacations/:id', async(req, res, next)=> {
+  try {
+    await Vacation.destroy({ where: { userId: req.params.userId, id: req.params.id}});
+    res.sendStatus(204);
+  }
+  catch(ex){
+    next(ex);
+  };
 });
 
 app.get('/api/users/:id/notes', async(req, res, next)=> {

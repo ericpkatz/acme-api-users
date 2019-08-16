@@ -74,6 +74,33 @@
         returns nothing 
       </li>
       <li class='list-group-item list-group-item-primary'>
+        Endpoint /users/:id/vacations 
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/<%= user.id %>/vacations'>/api/users/:id/vacations</a>
+        Returns a users vacations
+      </li>
+      <li class='list-group-item'>
+        POST /api/users/:userId/vacations
+        <br />
+        PAYLOAD { startDate: date, endDate: date } 
+        <br />
+        returns the created vacation 
+        <br />
+      </li>
+      <li class='list-group-item'>
+        PUT /api/users/:userId/vacations/:vacationId
+        <br />
+        PAYLOAD { startDate: date, endDate: date } 
+        <br />
+        returns the updated vacation 
+      </li>
+      <li class='list-group-item'>
+        DELETE /api/users/:userId/vacation/:vacationId
+        <br />
+        returns nothing 
+      </li>
+      <li class='list-group-item list-group-item-primary'>
         Endpoint /companies
       </li>
       <li class='list-group-item'>

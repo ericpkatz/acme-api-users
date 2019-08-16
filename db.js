@@ -102,7 +102,6 @@ const FollowingCompany = conn.define('following_company', {
       if(count >= 5){
         throw ({ message: 'user is already following 5 companies'});
       }
-
     },
     beforeSave: async function(following){
       const { companyId, userId } = following;
@@ -116,6 +115,42 @@ const FollowingCompany = conn.define('following_company', {
     }
   }
 });
+
+const Vacation = conn.define('vacation', {
+  startDate: {
+    type: Sequelize.DATE,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
+  },
+  endDate: {
+    type: Sequelize.DATE,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
+  },
+}, {
+  hooks: {
+    beforeCreate: async function(following){
+      const count = await Vacation.count({ where: { userId: following.userId }});
+      if(count >= 3){
+        throw ({ message: 'user already has 3 vacations'});
+      }
+    },
+    beforeSave: async function(vacation){
+      const { userId, endDate, startDate } = vacation;
+      if(!userId){
+        throw 'userId are required';
+      }
+      if(endDate < startDate){
+        throw ({ message: 'end date is less than start date'});
+      } 
+    }
+  }
+});
+
 
 const CompanyProduct = conn.define('company_product', {
   price: Sequelize.FLOAT
@@ -168,6 +203,8 @@ User.hasMany(FollowingCompany);
 
 User.belongsTo(Company);
 Note.belongsTo(User);
+
+Vacation.belongsTo(User);
 
 const domains = [
   'google',
@@ -340,5 +377,6 @@ module.exports = {
   CompanyProduct,
   FollowingCompany,
   CompanyProfits,
+  Vacation,
   Note
 };

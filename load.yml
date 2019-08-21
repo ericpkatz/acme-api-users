@@ -1,0 +1,22 @@
+config:
+  target: 'https://acme-api-dev.herokuapp.com/'
+  phases:
+    - duration: 20 
+      arrivalRate: 20
+scenarios:
+  - flow:
+    - get:
+        url: "/api/users/random"
+        capture:
+            json: "$.id"
+            as: "id"
+    - get:
+        url: "/api/users/detail/{{id}}"
+        capture:
+            json: "$.id"
+            as: "id"
+    - get:
+        url: "/api/users/{{id}}/followingCompanies"
+        capture:
+            json: "$.id"
+            as: "id"

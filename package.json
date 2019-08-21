@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test:load": "artillery run load.yml",
     "test": "DATABASE_URL=postgres://postgres@localhost/circle_test mocha --exit",
     "test:dev": "DATABASE_URL=postgres://localhost/acme_api_db_test npm run test:mocha -- --watch",
     "test:mocha": "./node_modules/mocha/bin/mocha",
     "start:dev": "ENV=LOCAL SYNC=DEV PORT=3001 DATABASE_URL=postgres://localhost/acme_api_db npm run server:dev",
     "start:dev:big": "SYNC=BIG PORT=3001 DATABASE_URL=postgres://localhost/acme_api_db npm run server:dev",
+    "start:load": "PORT=3001 DATABASE_URL=postgres://localhost/acme_api_db node server",
     "server:dev": "nodemon server"
   },
   "keywords": [],

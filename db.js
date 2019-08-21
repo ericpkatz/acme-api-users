@@ -117,6 +117,11 @@ const FollowingCompany = conn.define('following_company', {
 });
 
 const Vacation = conn.define('vacation', {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true
+  },
   startDate: {
     type: Sequelize.DATE,
     allowNull: false,

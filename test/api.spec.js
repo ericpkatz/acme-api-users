@@ -56,13 +56,14 @@ describe('API', ()=> {
     beforeEach(async()=> {
       user = seed.users[0];
       const _vacations = [
-        { startDate: moment(), endDate: moment()},
+        { startDate: '3/19/2019', endDate: moment()},
         { startDate: moment(), endDate: moment()},
         { startDate: moment(), endDate: moment()},
       ]; 
       vacations = await Promise.all(_vacations.map( vacation => Vacation.create({ ...vacation, userId: user.id })));
     });
     it('user can get vacations', ()=> {
+      expect((new moment(vacations[0].startDate).format('MM/DD/YYYY'))).to.equal('03/19/2019');
       return app.get(`/api/users/${ user.id }/vacations`)
         .expect(200)
         .then( response => {

@@ -10,6 +10,8 @@ const path = require('path');
 app.use(cors());
 const Op = require('sequelize').Op;
 
+app.use(require('morgan')('dev'));
+
 /*
 const rateLimit = require("express-rate-limit");
 

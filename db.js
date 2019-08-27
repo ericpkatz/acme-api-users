@@ -284,8 +284,8 @@ const seedNotes = ({ users })=> {
 };
 
 const seedProducts = async (companies)=> {
-  const names = ['foo', 'bar', 'bazz', 'quq', 'fizz', 'buzz' ];
-  const products = await Promise.all(names.map( name => Product.create({ name, suggestedPrice: faker.random.number(20)  + 3, description: `${faker.commerce.productMaterial()} ${faker.company.catchPhrase()}` })));
+  const names = ['foo', 'bar', 'bazz', 'quq', 'fizz', 'buzz', 'blurp', 'orc', 'grop'];
+  const products = await Promise.all(names.map( name => Product.create({ name, suggestedPrice: faker.random.number(7)  + 3, description: `${faker.commerce.productMaterial()} ${faker.company.catchPhrase()}` })));
   const promises = await Promise.all(companies.map( company => {
     const count = Math.ceil(Math.random()*3); 
     const _products = [];

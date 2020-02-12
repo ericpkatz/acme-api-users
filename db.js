@@ -14,6 +14,44 @@ const Product = conn.define('product', {
   suggestedPrice: Sequelize.FLOAT
 });
 
+const Bookmark = conn.define('bookmark', {
+  id: {
+    type: Sequelize.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    primaryKey: true
+  },
+  url: {
+    type: Sequelize.STRING(255*2),
+    allowNull: false,
+    validate: {
+      isUrl: true
+    }
+  },
+  rating: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 5 
+  },
+  category: {
+    type: Sequelize.STRING(100),
+    allowNull: false,
+    defaultValue: ''
+  },
+  userId: {
+    type: Sequelize.UUID,
+    allowNull: false
+  }
+}, {
+  hooks: {
+    beforeCreate: async function(note){
+      const count = await Bookmark.count({ where: { userId: note.userId }});
+      if(count >= 10){
+        throw ({ message: 'user can only have a max of 10 bookmarks' });
+      }
+    },
+  }
+});
+
 const Note = conn.define('note', {
   id: {
     type: Sequelize.UUID,
@@ -209,6 +247,8 @@ User.hasMany(FollowingCompany);
 User.belongsTo(Company);
 Note.belongsTo(User);
 
+Bookmark.belongsTo(User);
+
 Vacation.belongsTo(User);
 
 const domains = [
@@ -376,6 +416,7 @@ const sync  = {
 
 module.exports = {
   sync,
+  Bookmark,
   User,
   Company,
   Product,

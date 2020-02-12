@@ -5,6 +5,11 @@
   <body>
     <div class='container'>
       <h1>The Acme { API<%= ENV ? `-${ENV}` : '' %> } - Endpoints</h1>
+<h2>curl notes</h2>
+    <pre>
+curl some_url
+curl some_url -X [PUT, DELETE, POST] -d 'some_json_string' -H "Content-Type:application/json"
+    </pre>
     <ul class='list-group'>
       <li class='list-group-item list-group-item-primary'>
         Endpoint /users/random
@@ -44,6 +49,33 @@
       </li>
       <li class='list-group-item'>
         DELETE /api/users/:userId/notes/:noteId
+        <br />
+        returns nothing 
+      </li>
+      <li class='list-group-item list-group-item-primary'>
+        Endpoint /users/:id/bookmarks 
+      </li>
+      <li class='list-group-item'>
+        <a href='/api/users/<%= user.id %>/bookmarks'>/api/users/:id/bookmarks</a>
+        Returns the bookmarks from a user
+      </li>
+      <li class='list-group-item'>
+        POST /api/users/:userId/bookmarks
+        <br />
+        PAYLOAD { category: string, url: string, rating: integer } 
+        <br />
+        returns the created bookmark
+        <br />
+      </li>
+      <li class='list-group-item'>
+        PUT /api/users/:userId/bookmarks/:bookmarkId
+        <br />
+        PAYLOAD { category: string, url: string, rating: integer } 
+        <br />
+        returns the updated bookmark 
+      </li>
+      <li class='list-group-item'>
+        DELETE /api/users/:userId/bookmarks/:bookmarkId
         <br />
         returns nothing 
       </li>

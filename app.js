@@ -1,4 +1,4 @@
-const { Note, User, Company, Product, CompanyProduct, FollowingCompany, CompanyProfits, Vacation } = require('./db');
+const { Note, User, Company, Product, CompanyProduct, FollowingCompany, CompanyProfits, Vacation, Bookmark } = require('./db');
 const express = require('express');
 const app = express();
 app.use(express.json());
@@ -121,6 +121,45 @@ app.put('/api/users/:userId/notes/:id', async(req, res, next)=> {
 app.delete('/api/users/:userId/notes/:id', async(req, res, next)=> {
   try {
     await Note.destroy({ where: { userId: req.params.userId, id: req.params.id}});
+    res.sendStatus(204);
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.get('/api/users/:id/bookmarks', async(req, res, next)=> {
+  try {
+    res.send(await Bookmark.findAll({ where: { userId: req.params.id}}));
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.post('/api/users/:id/bookmarks', async(req, res, next)=> {
+  try {
+    res.status(201).send(await Bookmark.create({ ...req.body, userId: req.params.id}));
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.put('/api/users/:userId/bookmarks/:id', async(req, res, next)=> {
+  try {
+    const note = await Bookmark.findByPk(req.params.id);
+    await note.update(req.body);
+    res.send(note);
+  }
+  catch(ex){
+    next(ex);
+  };
+});
+
+app.delete('/api/users/:userId/bookmarks/:id', async(req, res, next)=> {
+  try {
+    await Bookmark.destroy({ where: { userId: req.params.userId, id: req.params.id}});
     res.sendStatus(204);
   }
   catch(ex){

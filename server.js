@@ -2,7 +2,8 @@ const app = require('./app');
 const { sync  } = require('./db');
 const axios = require('axios');
 
-app.listen(process.env.PORT || 3000);
+const port = process.env.PORT || 3000;
+app.listen(port, ()=> console.log(`listening on port ${port}`));
 
 const SYNC = process.env.SYNC;
 if(SYNC){

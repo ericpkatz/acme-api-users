@@ -1,7 +1,6 @@
 const { Note, User, Company, Product, CompanyProduct, FollowingCompany, CompanyProfits, Vacation, Bookmark } = require('./db');
 const express = require('express');
 const app = express();
-app.use(express.json());
 const ejs = require('ejs');
 app.set('view engine', 'html');
 app.engine('html', ejs.renderFile);
@@ -63,69 +62,9 @@ app.get('/api/users/:id/vacations', async(req, res, next)=> {
   };
 });
 
-app.post('/api/users/:id/vacations', async(req, res, next)=> {
-  try {
-    res.status(201).send(await Vacation.create({ userId: req.params.id, ...req.body}));
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
-app.put('/api/users/:userId/vacations/:id', async(req, res, next)=> {
-  try {
-    const vacation = await Vacation.findByPk(req.params.id);
-    await vacation.update(req.body);
-    res.send(vacation);
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
-app.delete('/api/users/:userId/vacations/:id', async(req, res, next)=> {
-  try {
-    await Vacation.destroy({ where: { userId: req.params.userId, id: req.params.id}});
-    res.sendStatus(204);
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
 app.get('/api/users/:id/notes', async(req, res, next)=> {
   try {
     res.send(await Note.findAll({ where: { userId: req.params.id}}));
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
-app.post('/api/users/:id/notes', async(req, res, next)=> {
-  try {
-    res.status(201).send(await Note.create({ userId: req.params.id, text: req.body.text, archived: req.body.archived}));
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
-app.put('/api/users/:userId/notes/:id', async(req, res, next)=> {
-  try {
-    const note = await Note.findByPk(req.params.id);
-    await note.update(req.body);
-    res.send(note);
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
-app.delete('/api/users/:userId/notes/:id', async(req, res, next)=> {
-  try {
-    await Note.destroy({ where: { userId: req.params.userId, id: req.params.id}});
-    res.sendStatus(204);
   }
   catch(ex){
     next(ex);
@@ -141,71 +80,11 @@ app.get('/api/users/:id/bookmarks', async(req, res, next)=> {
   };
 });
 
-app.post('/api/users/:id/bookmarks', async(req, res, next)=> {
-  try {
-    res.status(201).send(await Bookmark.create({ ...req.body, userId: req.params.id}));
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
-app.put('/api/users/:userId/bookmarks/:id', async(req, res, next)=> {
-  try {
-    const note = await Bookmark.findByPk(req.params.id);
-    await note.update(req.body);
-    res.send(note);
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
-app.delete('/api/users/:userId/bookmarks/:id', async(req, res, next)=> {
-  try {
-    await Bookmark.destroy({ where: { userId: req.params.userId, id: req.params.id}});
-    res.sendStatus(204);
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
 //TODO - routes for notes
 //
 app.get('/api/users/:id/followingCompanies', async(req, res, next)=> {
   try {
     res.send(await FollowingCompany.findAll({ where: { userId: req.params.id}}));
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
-app.post('/api/users/:id/followingCompanies', async(req, res, next)=> {
-  try {
-    res.status(201).send(await FollowingCompany.create({ userId: req.params.id, companyId: req.body.companyId, rating: req.body.rating}));
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
-app.put('/api/users/:userId/followingCompanies/:id', async(req, res, next)=> {
-  try {
-    const followed = await FollowingCompany.findByPk(req.params.id);
-    await followed.update(req.body);
-    res.send(followed);
-  }
-  catch(ex){
-    next(ex);
-  };
-});
-
-app.delete('/api/users/:userId/followingCompanies/:id', async(req, res, next)=> {
-  try {
-    await FollowingCompany.destroy({ where: { userId: req.params.userId, id: req.params.id}});
-    res.sendStatus(204);
   }
   catch(ex){
     next(ex);

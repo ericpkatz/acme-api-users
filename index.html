@@ -6,11 +6,6 @@
   <body>
     <div class='container'>
       <h1>The Acme { API<%= ENV ? `-${ENV}` : '' %> } - Endpoints</h1>
-<h2>curl notes</h2>
-    <pre>
-curl some_url
-curl some_url -X [PUT, DELETE, POST] -d 'some_json_string' -H "Content-Type:application/json"
-    </pre>
     <ul class='list-group'>
       <li class='list-group-item list-group-item-primary'>
         Endpoint /users/random
@@ -33,52 +28,12 @@ curl some_url -X [PUT, DELETE, POST] -d 'some_json_string' -H "Content-Type:appl
         <a href='/api/users/<%= user.id %>/notes'>/api/users/:id/notes</a>
         Returns the notes from a user
       </li>
-      <li class='list-group-item'>
-        POST /api/users/:userId/notes
-        <br />
-        PAYLOAD { archived: boolean, text: string } 
-        <br />
-        returns the created note
-        <br />
-      </li>
-      <li class='list-group-item'>
-        PUT /api/users/:userId/notes/:noteId
-        <br />
-        PAYLOAD { archived: boolean, text: string } 
-        <br />
-        returns the updated note
-      </li>
-      <li class='list-group-item'>
-        DELETE /api/users/:userId/notes/:noteId
-        <br />
-        returns nothing 
-      </li>
       <li class='list-group-item list-group-item-primary'>
         Endpoint /users/:id/bookmarks 
       </li>
       <li class='list-group-item'>
         <a href='/api/users/<%= user.id %>/bookmarks'>/api/users/:id/bookmarks</a>
         Returns the bookmarks from a user
-      </li>
-      <li class='list-group-item'>
-        POST /api/users/:userId/bookmarks
-        <br />
-        PAYLOAD { category: string, url: string, rating: integer } 
-        <br />
-        returns the created bookmark
-        <br />
-      </li>
-      <li class='list-group-item'>
-        PUT /api/users/:userId/bookmarks/:bookmarkId
-        <br />
-        PAYLOAD { category: string, url: string, rating: integer } 
-        <br />
-        returns the updated bookmark 
-      </li>
-      <li class='list-group-item'>
-        DELETE /api/users/:userId/bookmarks/:bookmarkId
-        <br />
-        returns nothing 
       </li>
       <li class='list-group-item list-group-item-primary'>
         Endpoint /users/:id/followingCompanies
@@ -88,50 +43,8 @@ curl some_url -X [PUT, DELETE, POST] -d 'some_json_string' -H "Content-Type:appl
         Returns the companies a user is following.
       </li>
       <li class='list-group-item'>
-        POST /api/users/:userId/followingCompanies
-        <br />
-        PAYLOAD { rating: number, companyId: UUID } 
-        <br />
-        returns the created following 
-      </li>
-      <li class='list-group-item'>
-        PUT /api/users/:userId/followingCompanies/:followingId
-        <br />
-        PAYLOAD { rating: number, companyId: UUID } 
-        <br />
-        returns the updated following 
-      </li>
-      <li class='list-group-item'>
-        DELETE /api/users/:userId/followingCompanies/:followingId
-        <br />
-        returns nothing 
-      </li>
-      <li class='list-group-item list-group-item-primary'>
-        Endpoint /users/:id/vacations 
-      </li>
-      <li class='list-group-item'>
         <a href='/api/users/<%= user.id %>/vacations'>/api/users/:id/vacations</a>
         Returns a users vacations
-      </li>
-      <li class='list-group-item'>
-        POST /api/users/:userId/vacations
-        <br />
-        PAYLOAD { startDate: date, endDate: date } 
-        <br />
-        returns the created vacation 
-        <br />
-      </li>
-      <li class='list-group-item'>
-        PUT /api/users/:userId/vacations/:vacationId
-        <br />
-        PAYLOAD { startDate: date, endDate: date } 
-        <br />
-        returns the updated vacation 
-      </li>
-      <li class='list-group-item'>
-        DELETE /api/users/:userId/vacations/:vacationId
-        <br />
-        returns nothing 
       </li>
       <li class='list-group-item list-group-item-primary'>
         Endpoint /companies

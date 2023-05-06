@@ -296,7 +296,9 @@ User.generate = (limit)=> {
   return users;
 };
 
-const _sync = ()=> conn.sync({ force: true });
+const _sync = async()=> {
+  await conn.sync({ force: true });
+};
 
 const seedFollowing = ({ users, companies })=> {
   return Promise.all(users.map( user => {
@@ -411,6 +413,9 @@ const sync  = {
           companies
         };
       })
+      .catch(ex => {
+        throw ex;
+      });
   }
 };
 
